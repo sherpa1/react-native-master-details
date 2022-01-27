@@ -8,10 +8,10 @@ Application mobile cross-platforms développée avec React Native illustrant le 
 
 `npm install`
 
-- Démarrage du Bundler JS _Metro_ :
+- (Dans un 1er onglet du terminal) Démarrage du Bundler JS _Metro_ :
 `npx react-native start`
 
-- Démarrage de l'application sur l'émulateur mobile Android :
+- (Dans un 2nd onglet du terminal) Démarrage de l'application sur l'émulateur mobile Android :
 `npx react-native run-android`
 
 ---
