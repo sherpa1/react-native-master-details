@@ -9,14 +9,45 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   useColorScheme,
   View,
 } from 'react-native';
+
+import { AsyncStorage } from '@react-native-async-storage';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import axios from 'axios';
+
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { getAuth, signInWithEmailAndPassword, signOut, useCreateUserWithEmailAndPassword } from 'firebase/auth';
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAB89prskhKYIjFVShQ9cYv24-xmH-iMQA",
+  authDomain: "react-native-master-details.firebaseapp.com",
+  projectId: "react-native-master-details",
+  storageBucket: "react-native-master-details.appspot.com",
+  messagingSenderId: "1032455351023",
+  appId: "1:1032455351023:web:3e7e1024875b5c86ea891a",
+  measurementId: "G-EQ9ZZ33XG7"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+//const analytics = getAnalytics(app);
+
+const auth = getAuth(app);
+
 
 const UserPreview = ({ item }, navigation) => {
 
@@ -51,8 +82,6 @@ const MasterScreen = ({ navigation }) => {
         const results = await axios.get(`${api}/users`);
 
         setUsers(results.data);
-
-        console.log(users);
 
         setLoadingStatus(0);//hide ActivityIndicator
 
@@ -103,6 +132,136 @@ const DetailsScreen = ({ navigation, route }) => {
   );
 };
 
+const logout = () => {
+  signOut(auth);
+}
+
+const SignInScreen = ({ navigation }) => {
+
+  const [login, onChangeLogin] = useState('john@doe.com');
+  const [password, onChangePassword] = useState('azerty');
+  const [user, loading, error] = useAuthState(auth, {});
+
+  const on_sign_in = async () => {
+    // if (!login || login === '') {
+    //   alert('Please fill your login');
+    // }
+    // if (!password || password === '') {
+    //   alert('Please fill your password');
+    // }
+
+    try {
+
+      signInWithEmailAndPassword(auth, login, password);
+
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error(error);
+    }
+  }
+
+  if (user) {
+    return (
+      <SafeAreaView>
+        <Text>Current User: {user.email}</Text>
+        <Button title="Sign out" onPress={() => logout()} />
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView>
+      <TextInput value={login} autoFocus={true} placeholder="Login" onChangeText={onChangeLogin} />
+      <TextInput value={password} placeholder="Password" secureTextEntry={true} onChangeText={onChangePassword} />
+      <Button title="Sign in" onPress={() => on_sign_in()} />
+
+    </SafeAreaView>
+  );
+}
+
+const SignUpScreen = ({ navigation }) => {
+
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [
+    createUserWithEmailAndPassword,
+    user,
+    loading,
+    error,
+  ] = useCreateUserWithEmailAndPassword(auth);
+
+  const on_sign_up = async () => {
+    if (!login || login === '') {
+      alert('Please fill your login');
+    }
+    if (!password || password === '') {
+      alert('Please fill your password');
+    }
+
+    try {
+      createUserWithEmailAndPassword(email, password)
+    } catch (error) {
+
+    }
+  }
+
+  if (error) {
+    return (
+      <div>
+        <p>Error: {error.message}</p>
+      </div>
+    );
+  }
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  if (user) {
+    return (
+      <div>
+        <p>Registered User: {user.email}</p>
+      </div>
+    );
+  }
+
+  return (
+    <SafeAreaView>
+      <TextInput placeholder='Login' />
+      <TextInput placeholder='Password' />
+      <Button title="Sign up" color="green" onPress={() => on_sign_up()} />
+    </SafeAreaView>
+  );
+}
+
+const CurrentUser = () => {
+  const [user, loading, error] = useAuthState(auth);
+
+  if (loading) {
+    return (
+      <div>
+        <p>Initialising User...</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div>
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
+  if (user) {
+    return (
+      <div>
+        <p>Current User: {user.email}</p>
+        <button onClick={logout}>Log out</button>
+      </div>
+    );
+  }
+  return <button onClick={login}>Sign in</button>;
+};
+
 const App = () => {
 
   const Stack = createNativeStackNavigator();
@@ -111,6 +270,14 @@ const App = () => {
     <NavigationContainer>
 
       <Stack.Navigator>
+        <Stack.Screen
+          name="Sign In"
+          component={SignInScreen}
+        />
+        <Stack.Screen
+          name="Sign Up"
+          component={SignUpScreen}
+        />
         <Stack.Screen
           name="Master"
           component={MasterScreen}
@@ -145,7 +312,10 @@ const styles = StyleSheet.create({
     backgroundColor: "grey",
     margin: 10,
   },
-
+  TextInput: {
+    backgroundColor: 'white',
+    marginBottom: 20
+  }
 });
 
 export default App;

@@ -18,11 +18,21 @@ Application mobile cross-platforms développée avec React Native illustrant le 
 
 ## Dépendances
 
-https://reactnative.dev/docs/navigation
+- https://reactnative.dev/docs/navigation
 
 `npm install @react-navigation/native @react-navigation/native-stack`
 
 `npm install react-native-screens react-native-safe-area-context`
+
+- Firebase 
+`npm install firebase`
+
+- https://github.com/CSFrequency/react-firebase-hooks
+`npm install react-firebase-hooks`
+
+- https://github.com/react-native-async-storage/async-storage
+`npm i react-native-async-storage`
+
 
 ## Documentation
 
@@ -33,6 +43,21 @@ https://reactnative.dev/docs/navigation
 - Flat List : https://reactnative.dev/docs/flatlist
 
 - Confirm Dialog : https://www.kindacode.com/article/how-to-create-a-confirm-dialog-in-react-native/
+
+- Authentification avec Google Firebase : https://firebase.google.com/codelabs/firebase-web?authuser=0#0
+
+- Suivre le tutoriel "authentification par mot de passe" de Firebase : https://firebase.google.com/docs/auth/web/password-auth?authuser=0
+
+### Firebase
+
+Suivre ce tutoriel : https://firebase.google.com/codelabs/firebase-we
+
+- Depuis la vue d'ensemble du projet 
+https://console.firebase.google.com/project/<nom-du-projet>/overview
+- Ajouter une application web pour le projet
+- Copier le code fourni et l'intégrer à l'application React Native
+
+
 
 ## API REST
 
