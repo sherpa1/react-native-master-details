@@ -37,6 +37,8 @@ const MasterScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
   const [loadingStatus, setLoadingStatus] = useState(0);
 
+  const api = 'https://jsonplaceholder.typicode.com';
+
   useEffect(() => {
 
     async function getUsers() {
@@ -44,9 +46,14 @@ const MasterScreen = ({ navigation }) => {
       try {
 
         setLoadingStatus(1);//show ActivityIndicator
-        const results = await axios.get('https://jsonplaceholder.typicode.com/users');
+
+        //get users from API
+        const results = await axios.get(`${api}/users`);
 
         setUsers(results.data);
+
+        console.log(users);
+
         setLoadingStatus(0);//hide ActivityIndicator
 
       } catch (error) {
@@ -71,7 +78,7 @@ const MasterScreen = ({ navigation }) => {
 const DetailsScreen = ({ navigation, route }) => {
 
   const on_press = () => {
-    alert("Do you really want to delete this user ?");
+    alert("Added to you favourites");
   };
 
   return (
@@ -91,7 +98,7 @@ const DetailsScreen = ({ navigation, route }) => {
       <Text style={styles.text.h2}>Company :</Text>
       <Text>{route.params.user.company.name}</Text>
       <Text>{route.params.user.company.bs}</Text>
-      <Button title="Delete" color="red" onPress={() => on_press()} />
+      <Button title="Add to favourites" color="red" onPress={() => on_press()} />
     </View>
   );
 };
