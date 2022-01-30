@@ -43,11 +43,11 @@ const MasterScreen = ({ navigation }) => {
 
       try {
 
-        setLoadingStatus(1);
+        setLoadingStatus(1);//show ActivityIndicator
         const results = await axios.get('https://jsonplaceholder.typicode.com/users');
 
         setUsers(results.data);
-        setLoadingStatus(0);
+        setLoadingStatus(0);//hide ActivityIndicator
 
       } catch (error) {
         console.error(error);
@@ -62,7 +62,7 @@ const MasterScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       {loadingStatus === 1 ? <ActivityIndicator /> : null}
-      {(users.length && loadingStatus === 1 || loadingStatus === 0) ?
+      {(users.length) ?
         <FlatList data={users} keyExtractor={(item) => item.id} renderItem={(item) => UserPreview(item, navigation)} />
         : <Text>No users found.</Text>}
     </SafeAreaView>);
