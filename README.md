@@ -33,6 +33,7 @@ Application mobile cross-platforms développée avec React Native illustrant le 
 - https://github.com/react-native-async-storage/async-storage
 `npm i react-native-async-storage`
 
+- `npm i react-native-dotenv`
 
 ## Documentation
 
