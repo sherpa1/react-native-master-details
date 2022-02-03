@@ -45,10 +45,9 @@ const firebaseConfig = {
 // // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// //const analytics = getAnalytics(app);
+//const analytics = getAnalytics(app);
 
 const auth = getAuth(app);
-
 
 const UserPreview = ({ item }, navigation) => {
 
@@ -59,6 +58,7 @@ const UserPreview = ({ item }, navigation) => {
   return (
     <Pressable style={styles.UserPreview} onPress={() => on_press()}>
       <Text style={{ color: 'white', fontSize: 30 }}>{item.name}</Text>
+      <Text>{item.favourite ? 'oui' : 'non'}</Text>
     </Pressable>
   );
 
@@ -82,6 +82,8 @@ const MasterScreen = ({ navigation }) => {
         //get users from API
         const results = await axios.get(`${api}/users`);
 
+        results.data.map(item => item.favourite = false);
+
         setUsers(results.data);
 
         setLoadingStatus(0);//hide ActivityIndicator
@@ -98,6 +100,7 @@ const MasterScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView>
+      <CurrentUser />
       {loadingStatus === 1 ? <ActivityIndicator /> : null}
       {(users.length) ?
         <FlatList data={users} keyExtractor={(item) => item.id} renderItem={(item) => UserPreview(item, navigation)} />
@@ -108,32 +111,42 @@ const MasterScreen = ({ navigation }) => {
 const DetailsScreen = ({ navigation, route }) => {
 
   const on_press = () => {
-    alert("Added to you favourites");
+
+    const new_user = user;
+    new_user.favourite = user.favourite ? false : true;
+    setUser(new_user);
   };
+
+  const [user, setUser] = useState(route.params.user);
 
   return (
     <View style={styles.Screen}>
-      <Text style={styles.text.h1}>{route.params.user.name}</Text>
-      <Text>{route.params.user.username}</Text>
-      <Text>{route.params.user.email}</Text>
-      <Text>{route.params.user.phone}</Text>
-      <Text>{route.params.user.website}</Text>
+      <Text>Favorites : {user.favourite ? 'oui' : 'non'}</Text>
+      <Text style={styles.text.h1}>{user.name}</Text>
+      <Text>{user.username}</Text>
+      <Text>{user.email}</Text>
+      <Text>{user.phone}</Text>
+      <Text>{user.website}</Text>
       <Text style={styles.text.h2}>Address :</Text>
-      <Text>{route.params.user.address.street}</Text>
-      <Text>{route.params.user.address.suite}</Text>
-      <Text>{route.params.user.address.city}</Text>
-      <Text>{route.params.user.address.zipcode}</Text>
-      <Text>{route.params.user.address.geo.lat}</Text>
-      <Text>{route.params.user.address.geo.lng}</Text>
+      <Text>{user.address.street}</Text>
+      <Text>{user.address.suite}</Text>
+      <Text>{user.address.city}</Text>
+      <Text>{user.address.zipcode}</Text>
+      <Text>{user.address.geo.lat}</Text>
+      <Text>{user.address.geo.lng}</Text>
       <Text style={styles.text.h2}>Company :</Text>
-      <Text>{route.params.user.company.name}</Text>
-      <Text>{route.params.user.company.bs}</Text>
-      <Button title="Add to favourites" color="red" onPress={() => on_press()} />
+      <Text>{user.company.name}</Text>
+      <Text>{user.company.bs}</Text>
+      {(!user.favourite) ?
+        <Button title="Add to favourites" color="green" onPress={() => on_press()} /> :
+        <Button title="Remove from favourites" color="red" onPress={() => on_press()} />
+
+      }
     </View>
   );
 };
 
-const logout = () => {
+const sign_out = () => {
   signOut(auth);
 }
 
@@ -149,6 +162,8 @@ const SignInScreen = ({ navigation }) => {
 
       signInWithEmailAndPassword(auth, email, password);
 
+      go_to_master();
+
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -156,11 +171,22 @@ const SignInScreen = ({ navigation }) => {
     }
   }
 
+  const go_to_master = () => {
+    try {
+      navigation.navigate("Master");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   if (user) {
+
+
     return (
       <SafeAreaView>
-        <Text>Current User: {user.email}</Text>
-        <Button title="Sign out" onPress={() => logout()} />
+
+        <Button title="Master" onPress={() => go_to_master()} />
+        <Button title="Sign out" onPress={() => sign_out()} />
       </SafeAreaView>
     );
   }
@@ -185,84 +211,84 @@ const SignInScreen = ({ navigation }) => {
 
 const SignUpScreen = ({ navigation }) => {
 
-  // const [login, setLogin] = useState('');
-  // const [password, setPassword] = useState('');
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
 
-  // const [
-  //   createUserWithEmailAndPassword,
-  //   user,
-  //   loading,
-  //   error,
-  // ] = useCreateUserWithEmailAndPassword(auth);
+  const [
+    createUserWithEmailAndPassword,
+    user,
+    loading,
+    error,
+  ] = useCreateUserWithEmailAndPassword(auth);
 
-  // const on_sign_up = async () => {
-  //   if (!login || login === '') {
-  //     alert('Please fill your login');
-  //   }
-  //   if (!password || password === '') {
-  //     alert('Please fill your password');
-  //   }
+  const on_sign_up = async () => {
+    if (!login || login === '') {
+      alert('Please fill your login');
+    }
+    if (!password || password === '') {
+      alert('Please fill your password');
+    }
 
-  //   try {
-  //     createUserWithEmailAndPassword(email, password)
-  //   } catch (error) {
+    try {
+      createUserWithEmailAndPassword(email, password)
+    } catch (error) {
 
-  //   }
-  // }
+    }
+  }
 
-  // if (error) {
-  //   return (
-  //     <View>
-  //       <Text>Error: {error.message}</Text>
-  //     </View>
-  //   );
-  // }
-  // if (loading) {
-  //   return <Text>Loading...</Text>;
-  // }
-  // if (user) {
-  //   return (
-  //     <View>
-  //       <Text>Registered User: {user.email}</Text>
-  //     </View>
-  //   );
-  // }
+  if (error) {
+    return (
+      <View>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+  if (user) {
+    return (
+      <View>
+        <Text>Registered User: {user.email}</Text>
+      </View>
+    );
+  }
 
-  // return (
-  //   <SafeAreaView>
-  //     <TextInput placeholder='Login' />
-  //     <TextInput placeholder='Password' />
-  //     <Button title="Sign up" color="green" onPress={() => on_sign_up()} />
-  //   </SafeAreaView>
-  // );
+  return (
+    <SafeAreaView>
+      <TextInput placeholder='Login' />
+      <TextInput placeholder='Password' />
+      <Button title="Sign up" color="green" onPress={() => on_sign_up()} />
+    </SafeAreaView>
+  );
 }
 
 const CurrentUser = () => {
-  // const [user, loading, error] = useAuthState(auth);
+  const [user, loading, error] = useAuthState(auth);
 
-  // if (loading) {
-  //   return (
-  //     <View>
-  //       <Text>Initialising User...</Text>
-  //     </View>
-  //   );
-  // }
-  // if (error) {
-  //   return (
-  //     <View>
-  //       <Text>Error: {error}</Text>
-  //     </View>
-  //   );
-  // }
-  // if (user) {
-  //   return (
-  //     <View>
-  //       <Text>Current User: {user.email}</Text>
-  //       <Button title="Sign Out" onPress={logout} />
-  //     </View>
-  //   );
-  // }
-  // return <Button title="Sign In" onPress={login} />;
+  if (loading) {
+    return (
+      <View>
+        <Text>Initialising User...</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View>
+        <Text>Error: {error}</Text>
+      </View>
+    );
+  }
+  if (user) {
+    return (
+      <View>
+        <Text>Current User: {user.email}</Text>
+        <Button color="red" title="Sign Out" onPress={sign_out} />
+      </View>
+    );
+  }
+  return <Button title="Sign In" onPress={login} />;
 };
 
 const App = () => {

@@ -53,12 +53,10 @@ Application mobile cross-platforms développée avec React Native illustrant le 
 
 Suivre ce tutoriel : https://firebase.google.com/codelabs/firebase-we
 
-- Depuis la vue d'ensemble du projet 
+1. Depuis la vue d'ensemble du projet 
 https://console.firebase.google.com/project/<nom-du-projet>/overview
-- Ajouter une application web pour le projet
-- Copier le code fourni et l'intégrer à l'application React Native
-
-
+2. Ajouter une application web pour le projet
+3. Copier le code fourni et l'intégrer à l'application React Native
 
 ## API REST
 
