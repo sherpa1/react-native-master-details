@@ -12,28 +12,23 @@ Application mobile cross-platforms développée avec React Native illustrant le 
 
 `npx react-native start`
 
-- (Dans un 2nd onglet du terminal) Démarrage de l'application sur l'émulateur mobile Android :
+- (Dans un 2nd onglet du terminal) Démarrage de l'application sur l'émulateur mobile Android ou iOS :
 
 `npx react-native run-android`
 
+ou
+
+`npx react-native run-ios`
+
 ## Dépendances
 
-- https://reactnative.dev/docs/navigation
+- Navigation : https://reactnative.dev/docs/navigation
 
-`npm install @react-navigation/native @react-navigation/native-stack`
+- Firebase : https://firebase.google.com/docs/web/setup
 
-`npm install react-native-screens react-native-safe-area-context`
+- Firebase Hooks : https://github.com/CSFrequency/react-firebase-hooks
 
-- Firebase 
-`npm install firebase`
-
-- https://github.com/CSFrequency/react-firebase-hooks
-`npm install react-firebase-hooks`
-
-- https://github.com/react-native-async-storage/async-storage
-`npm i react-native-async-storage`
-
-- `npm i react-native-dotenv`
+- Async Storage : https://github.com/react-native-async-storage/async-storage
 
 ## Documentation
 
@@ -49,14 +44,16 @@ Application mobile cross-platforms développée avec React Native illustrant le 
 
 - Suivre le tutoriel "authentification par mot de passe" de Firebase : https://firebase.google.com/docs/auth/web/password-auth?authuser=0
 
-### Firebase
+## Firebase
 
 Suivre ce tutoriel : https://firebase.google.com/codelabs/firebase-we
 
 1. Depuis la vue d'ensemble du projet 
 https://console.firebase.google.com/project/<nom-du-projet>/overview
 2. Ajouter une application web pour le projet
-3. Copier le code fourni et l'intégrer à l'application React Native
+3. Copier le code fourni et l'intégrer à l'application React 
+4. Renommer le fichier ./config-example.js en ./config.js
+5. Compléter le fichier ./config.js avec les données communiquées dans Firebase.
 
 ## API REST
 
@@ -104,8 +101,12 @@ __Alexandre Leroux__
 - sherpa#3890
 - https://github.com/sherpa1/
 
-_Enseignant vacataire à l'Université de Lorraine_
+_Développeur Full Stack (Web & Mobile)_
+
+_Enseignant vacataire à l'Université de Lorraine / Formateur indépendant_
 
 - IUT Nancy-Charlemagne (LP Ciasie)
 
 - Institut des Sciences du Digital, Management & Cognition (Masters Sciences Cognitives)
+
+- CESI Alternance (Concepteur développeur d'applications - Manager en architecture et application logicielles des systèmes d'information) 
