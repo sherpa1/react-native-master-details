@@ -10,7 +10,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  useColorScheme,
   View,
 } from 'react-native';
 
@@ -21,12 +20,7 @@ import axios from 'axios';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { getAuth, signInWithEmailAndPassword, signOut, useCreateUserWithEmailAndPassword } from 'firebase/auth';
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-//import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
 import { API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID, MEASUREMENT_ID } from './config';
 
 // Your web app's Firebase configuration
@@ -42,10 +36,8 @@ const firebaseConfig = {
 };
 
 
-// // Initialize Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-//const analytics = getAnalytics(app);
 
 const auth = getAuth(app);
 
@@ -56,9 +48,12 @@ const UserPreview = ({ item }, navigation) => {
   };
 
   return (
-    <Pressable style={styles.UserPreview} onPress={() => on_press()}>
-      <Text style={{ color: 'white', fontSize: 30 }}>{item.name}</Text>
-      <Text>{item.favourite ? 'oui' : 'non'}</Text>
+    <Pressable style={[styles.UserPreview, item.favourite ? styles.favorite : null]} onPress={() => on_press()}>
+
+      <View style={styles.detailsHeader}>
+        <Text style={{ color: 'white', fontSize: 30 }}>{item.name}</Text>
+        <Text style={styles.favouriteIcon}>{item.favourite ? "⭐️" : null}</Text>
+      </View>
     </Pressable>
   );
 
@@ -82,9 +77,9 @@ const MasterScreen = ({ navigation }) => {
         //get users from API
         const results = await axios.get(`${api}/users`);
 
-        results.data.map(item => item.favourite = false);
+        results.data.map(item => item.favourite = false);//add a "favorite" field (boolean) for each user
 
-        setUsers(results.data);
+        setUsers(results.data);//update state
 
         setLoadingStatus(0);//hide ActivityIndicator
 
@@ -108,21 +103,39 @@ const MasterScreen = ({ navigation }) => {
     </SafeAreaView>);
 };
 
-const DetailsScreen = ({ navigation, route }) => {
-
-  const on_press = () => {
-
-    const new_user = user;
-    new_user.favourite = user.favourite ? false : true;
-    setUser(new_user);
-  };
+const DetailsScreen = ({ route }) => {
 
   const [user, setUser] = useState(route.params.user);
+  const [isFavourite, setIsFavourite] = useState(user.favourite);
+
+  const [message, setMessage] = useState("");
+
+  const toggle_favourite = () => {
+
+    const value = isFavourite ? false : true;
+
+    setIsFavourite(value);
+
+    setMessage(value ? "Added" : "Removed");
+
+    //will clear message and hide notification after 2.5s 
+    setTimeout(() => {
+      setMessage("");
+    }, 2500);
+
+  };
+
 
   return (
     <View style={styles.Screen}>
-      <Text>Favorites : {user.favourite ? 'oui' : 'non'}</Text>
-      <Text style={styles.text.h1}>{user.name}</Text>
+
+      {(message !== "") ? <View style={styles.messageView}><Text style={styles.message}> {message}</Text><Button style={styles.closeButton} color="black" title="x" onPress={() => setMessage("")} /></View> : null}
+
+      <View style={styles.detailsHeader}>
+        <Text style={styles.text.h1}>{user.name}</Text>
+        <Text style={styles.favouriteIcon}>{isFavourite ? "⭐️" : null}</Text>
+      </View>
+
       <Text>{user.username}</Text>
       <Text>{user.email}</Text>
       <Text>{user.phone}</Text>
@@ -137,10 +150,9 @@ const DetailsScreen = ({ navigation, route }) => {
       <Text style={styles.text.h2}>Company :</Text>
       <Text>{user.company.name}</Text>
       <Text>{user.company.bs}</Text>
-      {(!user.favourite) ?
-        <Button title="Add to favourites" color="green" onPress={() => on_press()} /> :
-        <Button title="Remove from favourites" color="red" onPress={() => on_press()} />
-
+      {(isFavourite) ?
+        <Button title="Remove from your favourites contacts" color="red" onPress={() => toggle_favourite()} /> :
+        <Button title="Add to your favourites contacts" color="blue" onPress={() => toggle_favourite()} />
       }
     </View>
   );
@@ -156,18 +168,16 @@ const SignInScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [user, loading, error] = useAuthState(auth);
 
-
   const on_sign_in = async () => {
     try {
 
-      signInWithEmailAndPassword(auth, email, password);
+      signInWithEmailAndPassword(auth, email, password);//Sign In with Firebase Auth
 
       go_to_master();
 
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
       console.error(error);
+      alert("An error has occurred while calling API");
     }
   }
 
@@ -180,13 +190,12 @@ const SignInScreen = ({ navigation }) => {
   }
 
   if (user) {
-
-
     return (
       <SafeAreaView>
-
-        <Button title="Master" onPress={() => go_to_master()} />
-        <Button title="Sign out" onPress={() => sign_out()} />
+        <View style={styles.SignInScreen}>
+          <Button title="Sign out" color="red" onPress={() => sign_out()} />
+          <Button title="Contacts List" onPress={() => go_to_master()} />
+        </View>
       </SafeAreaView>
     );
   }
@@ -194,9 +203,8 @@ const SignInScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       <StatusBar />
-
       {(loading) ? <ActivityIndicator /> : null}
-      {(error) ? <Text>An error occurred : {error}</Text> : null}
+      {(error) ? <Text>An error has occurred : {error}</Text> : null}
       <ScrollView
         contentInsetAdjustmentBehavior="automatic">
         <View>
@@ -209,6 +217,7 @@ const SignInScreen = ({ navigation }) => {
   );
 }
 
+//TODO:
 const SignUpScreen = ({ navigation }) => {
 
   const [login, setLogin] = useState('');
@@ -330,10 +339,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
+  detailsHeader: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
   Screen: {
     padding: 30,
     justifyContent: 'space-evenly',
     flex: 1,
+  },
+  SignInScreen: {
+    display: "flex",
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: "100%"
   },
   UserPreview: {
     padding: 10,
@@ -341,11 +360,32 @@ const styles = StyleSheet.create({
     backgroundColor: "grey",
     margin: 10,
   },
+  favorite: {
+    backgroundColor: "gold",
+  },
+  favouriteIcon: {
+    fontSize: 30
+  },
   TextInput: {
     backgroundColor: 'white',
     marginBottom: 60,
     padding: 10,
     height: 40
+  },
+  messageView: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    borderType: "solid",
+    borderWidth: 2,
+    borderRadius: 3,
+    borderColor: "green",
+    backgroundColor: 'green',
+    padding: 6,
+  },
+  message: {
+    fontSize: 18,
+    color: "white",
   }
 });
 
